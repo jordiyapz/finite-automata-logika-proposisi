@@ -1,0 +1,76 @@
+<***************** CFG ******************>
+
+Nonterm = {S, A, B, C, D, E, F, G, H}
+Term = {p, q, r, s, and, or, xor, not, if, iff, then, (, )}
+Initial = S
+
+S -> H | <NULL>
+A -> p | q | r | s
+B -> and | or | xor | iff
+C -> not
+D -> if
+E -> then
+F -> (
+G -> )
+H -> A | HBH | CH | FHG | DSES  
+
+<*************** Chompsky ***************>
+
+START   : -
+DEL     : - 
+UNIT    :
+    S -> HBH | CH | FHG | DHEH | p | q | r | s | <NULL>
+    A -> p | q | r | s
+    B -> and | or | xor | iff
+    C -> not
+    D -> if
+    E -> then
+    F -> (
+    G -> )
+    H -> HBH | CH | FHG | DHEH | p | q | r | s
+TERM    : -
+BIN     :
+    S -> HI | CH | FJ | KL | p | q | r | s | <NULL>
+    A -> p | q | r | s
+    B -> and | or | xor | iff
+    C -> not
+    D -> if
+    E -> then
+    F -> (
+    G -> )
+    H -> HI | CH | FJ | KL | p | q | r | s
+    I -> BH
+    J -> HG
+    K -> DH
+    L -> EH
+
+Hasil:
+    S -> HI | CH | FJ | KL | 1 | <NULL>
+    A -> 1
+    B -> 3 | 4 | 5 | 8
+    C -> 2
+    D -> 6
+    E -> 7
+    F -> 9
+    G -> 10
+    H -> HI | CH | FJ | KL | 1
+    I -> BH
+    J -> HG
+    K -> DH
+    L -> EH
+
+Tabel Transisi:
+    	1		2		3		4		5		6		7		8		9		10		EOS
+    S	HI|1	CH		-		-		-		KL		-		-		FJ		-		EOS
+    A	1		-		-		-		-		-		-		-		-		-		-
+    B	-		-		3		4		5		-		-		8		-		-		-
+    C	-		2		-		-		-		-		-		-		-		-		-
+    D	-		-		-		-		-		6		-		-		-		-		-
+    E	-		-		-		-		-		-		7		-		-		-		-
+    F	-		-		-		-		-		-		-		-		9		-		-
+    G	-		-		-		-		-		-		-		-		-		10		-
+    H	HI|1	CH		-		-		-		KL		-		-		FJ		-		-
+    I	BH		-		-		-		-		-		-		-		-		-		-
+    J	HG		HG		-		-		-		HG		-		-		HG		-		-
+    K	-		-		-		-		-		DH		-		-		-		-		-
+    L	-		-		-		-		-		-		EH		-		-		-		-
