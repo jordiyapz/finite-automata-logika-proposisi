@@ -3,22 +3,32 @@ import java.util.ArrayList;
 
 class Main {
     public static void main(String[] args) {
-        String inputan = getInput(0);
-
-        ArrayList<Term> arrToken = tokenize("p xor q and q iff r or if not s then q");
-        print(arrToken);
-        PDA pda = createPDA2();
-        System.out.println(pda.validate(arrToken));
+        String mode = "test";
+        if (mode.equals("test")) {
+            unitTest();
+        } else {
+            String inputan = getInput(-1);
+            ArrayList<Term> arrToken = new ArrayList<>();
+            if (lexicalize(arrToken, inputan)) {
+                print(arrToken);
+                PDA pda = createPDA2();
+                System.out.println((pda.validate(arrToken))? "Valid":"Not valid");
+            }
+        }
     }
 
     private static String getInput(int mode) {
         String inputan;
         switch (mode) {
-            case 0: return "p and q";
-            case 1: return "p and q or p iff if s then q or p";
-            case 2: return "(q and p xor(     if q then p) iff ((q)))";
+            case 0: return "(p) and q";
+            case 1: return "p and q or p iff if S then q or p";
+            case 2: return "(q AND p xor(     if q then p) iff ((q)))";
             case 3: return "p iff";
             case 4: return "((if (q) then q) iff (r xor p))";
+            case 5: return "p xor q and q iff r or if not s then q";
+            case 6: return "(p) q";
+            case 7: return "not p iff";
+            case 8: return "p and q iff (p xor (if p then r))";
             default:
                 Scanner scanner = new Scanner(System.in);
                 inputan = scanner.nextLine();
@@ -27,9 +37,44 @@ class Main {
         }
         return inputan;
     }
+    private static boolean unitTest () {
+        Object[][] testCase = {
+            {getInput(0), true},
+            {getInput(1), true},
+            {getInput(2), true},
+            {getInput(3), false},
+            {getInput(4), true},
+            {getInput(5), true},
+            {getInput(6), false},
+            {getInput(7), false},
+            {getInput(8), true}
+        };
+        ArrayList<Term> arrToken = null;
+        PDA pda = createPDA2();
+        boolean result, finalResult = true;
+        for (int i = 0; i < testCase.length; i++) {
+            String inputan = (String) testCase[i][0];
+            boolean testValue = (boolean) testCase[i][1];
+            System.out.println("Test case " + i + ": " + inputan);
+            System.out.print("Result: ");
+            result = false;
+            arrToken = new ArrayList<>();
+            if (lexicalize(arrToken, inputan))
+                result = pda.validate(arrToken);
+            System.out.println((result)? "Valid":"Not valid");
+            result = result == testValue;
+            System.out.println((result)? "Passed": "Not Passed");
+            System.out.println();
+            if (!result) finalResult = false;
+        }
+
+        System.out.println("Final test result: " + ((finalResult)? "Passed": "Not Passed"));
+        return finalResult;
+    }
     private static ArrayList<String> splitInput (String inputan) {
         /** split inputan */
         ArrayList<String> arrKata = new ArrayList<String>();
+        inputan = inputan.toLowerCase();
         char[] arrChar = inputan.toCharArray();
         String kata = "";
         boolean start = true;
@@ -73,7 +118,7 @@ class Main {
 
         return arrKata;
     }
-    private static ArrayList<Term> tokenize(String inputan) {
+    private static boolean lexicalize(ArrayList<Term> arrToken, String inputan) {
 
         FA[] arrFa = {
             new FA (1, "pqrs", new int[][]{{1, 1, 1, 1},{-1, -1, -1}}, new int[]{1}),
@@ -88,7 +133,6 @@ class Main {
             new FA (10, ")")
         };
 
-        ArrayList<Term> arrIdToken = new ArrayList<> ();
         ArrayList<String> arrKata = splitInput(inputan);
 
         for (String kata : arrKata) {
@@ -99,16 +143,16 @@ class Main {
                 // System.out.println(idToken);
                 if (idToken != 0) {
                     b = true;
-                    arrIdToken.add(new Term(idToken));
+                    arrToken.add(new Term(idToken));
                     break;
                 }
             }
             if (!b) {
                 System.out.println("error ");
-                break;
+                return false;
             }
         }
-        return arrIdToken;
+        return true;
     }
     private static void print(ArrayList<Term> arr) {
         for (Term obj : arr) {

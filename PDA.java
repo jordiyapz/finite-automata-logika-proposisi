@@ -1,5 +1,7 @@
 import java.util.ArrayList;
 
+import javax.sound.sampled.Port;
+
 class PDA {
     Nonterm initState;
     Nonterm[] states;
@@ -9,6 +11,7 @@ class PDA {
 
     private final static int MaxNumOfLoopPermitted = 10000;
 
+    private final static boolean debugMode = false;
 
     PDA (char initState, char[] states, Term[] terms, Union [][][][] transTab) {
         this.initState = new Nonterm(initState);
@@ -16,11 +19,6 @@ class PDA {
         this.terms = terms;
         this.transTab = transTab;
         numOfLoops = 0;
-    }
-
-    public boolean validate2(ArrayList<Term> input) {
-
-        return false;
     }
 
     public boolean validate(ArrayList<Term> input) {
@@ -41,11 +39,11 @@ class PDA {
             stack.size() <= inpLength &&
             ++numOfLoops <= MaxNumOfLoopPermitted
         ) {
-            stack.print();
+            if (debugMode) stack.print();
             Union temp = stack.pop();
             if (temp.isTerm()) {
                 if (!input.get(head).equals(temp)) {
-                    System.out.println("Terminal tidak sesuai dengan yg di stack");
+                    if (debugMode) System.out.println("Terminal tidak sesuai dengan yg di stack");
                     return false;
                 } else {
                     head++;
@@ -55,7 +53,7 @@ class PDA {
                 int idState = getId(state);
                 int idterm = getId((Term) input.get(head));
                 if (idState == -1 || idterm == -1) {
-                    System.out.println("idState tidak ditemukan");
+                    if (debugMode) System.out.println("idState tidak ditemukan");
                     return false;
                 } else {
                     Union[][] product;
@@ -63,6 +61,10 @@ class PDA {
                         product = transTab[idState][idterm];
                         IStack<Union> stck = stack;
                         // if (idterm > 0) stck = stack.clone();
+                        if (product.length == 0) {
+                            if (debugMode) System.out.println("Produk tidak ditemukan");
+                            return false;
+                        }
                         for (int i = product.length-1; i >= 0; i--) {
                             Union[] pd = product[i];
                             IStack<Union> st = stck;
@@ -70,8 +72,10 @@ class PDA {
                             for (int j = pd.length-1; j >= 0; j--) {
                                 st.push(product[i][j]);
                             }
-                            System.out.println("\nRead["+ head +"]: " + input.get(head).val);
-                            System.out.print("["+ state.val +"," +(idterm+1)+ "," + i + "]: ");
+                            if (debugMode) {
+                                System.out.println("\nRead["+ head +"]: " + input.get(head).val);
+                                System.out.print("["+ state.val +"," +(idterm+1)+ "," + i + "]: ");
+                            }
                             if (traverse(input, st, head)) return true;
                         }
                     // }
@@ -79,12 +83,14 @@ class PDA {
             }
         }
         if (stack.size() > inpLength) {
-            System.out.println("Stack melebihi batas ukuran");
+            if (debugMode) System.out.println("Stack melebihi batas ukuran");
             return false;
         }
         if (stack.isEmpty() && head == inpLength) return true;
-        else if (stack.isEmpty()) System.out.println("Stack habis duluan");
-        else System.out.println("Head habis duluan");
+        else if (stack.isEmpty()) if (debugMode) System.out.println("Stack habis duluan");
+        else if (debugMode) System.out.println("Head habis duluan");
+
+        if (debugMode && numOfLoops > MaxNumOfLoopPermitted) System.out.println("Max num of loops reached!");
         return false;
     }
 
