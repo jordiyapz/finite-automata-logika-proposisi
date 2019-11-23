@@ -6,6 +6,10 @@ class Nonterm extends Union {
     Nonterm(char c) {
         val = String.valueOf(c);
     }
+    boolean equals(Union u) {
+        Nonterm t = (Nonterm) u;
+        return t.val.equals(val);
+    }
     static Nonterm[] toArr (String[] arr) {
         Nonterm[] arrOut = new Nonterm[arr.length];
         for (int i = 0; i < arr.length; i++) {
@@ -19,5 +23,8 @@ class Nonterm extends Union {
             arrOut[i] = new Nonterm(arr[i]);
         }
         return arrOut;
+    }
+    static Nonterm[] toArr (String s) {
+        return toArr(s.toCharArray());
     }
 }

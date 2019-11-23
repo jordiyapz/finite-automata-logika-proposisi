@@ -3,6 +3,10 @@ class Term extends Union {
     Term(int i) {
         val = i;
     }
+    boolean equals(Union u) {
+        Term t = (Term) u;
+        return t.val == this.val;
+    }
     static Term[] toArr (int[] arr) {
         Term[] arrOut = new Term[arr.length];
         for (int i = 0; i < arr.length; i++) {

@@ -7,7 +7,7 @@ class IStack<E> extends Stack<E> {
     IStack() {
         super();
     }
-    
+
     public IStack<E> clone() {
         IStack<E> dump = new IStack<>();
         IStack<E> clone = new IStack<>();
@@ -20,5 +20,22 @@ class IStack<E> extends Stack<E> {
             clone.push(val);
         }
         return clone;
+    }
+
+    public void print() {
+        IStack<Union> dump = new IStack<>();
+        while (!this.isEmpty())
+            dump.push((Union) this.pop());
+        while (!dump.isEmpty()) {
+            Union temp = dump.pop();
+            if (temp.isTerm()) {
+                System.out.print(((Term)temp).val);
+            } else {
+                System.out.print(((Nonterm)temp).val);
+            }
+            System.out.print(" -> ");
+            this.push((E)temp);
+        }
+        System.out.println();
     }
 }
