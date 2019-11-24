@@ -3,75 +3,22 @@ import java.util.ArrayList;
 
 class Main {
     public static void main(String[] args) {
-        String mode = "test";
-        if (mode.equals("test")) {
-            unitTest();
-        } else if (mode.equals("run")) {
-            String inputan = getInput(-1);
-            ArrayList<Term> arrToken = new ArrayList<>();
-            if (lexicalize(arrToken, inputan)) {
-                print(arrToken);
-                PDA pda = createPDA();
-                System.out.println((pda.validate(arrToken))? "Valid":"Not valid");
-            }
+        System.out.print("Input: ");
+        Scanner scanner = new Scanner(System.in);
+        String inputan = scanner.nextLine();
+        scanner.close();
+        ArrayList<Term> arrToken = new ArrayList<>();
+        if (lexicalize(arrToken, inputan)) {
+            System.out.print("Lexic: ");
+            print(arrToken);
+            PDA pda = createPDA();
+            System.out.println("Result : " + ((pda.validate(arrToken))? "Valid":"Not valid"));
+        } else {
+            System.out.println("Wrong input");
         }
     }
 
-    private static String getInput(int mode) {
-        String inputan;
-        switch (mode) {
-            case 0: return "(p) and q";
-            case 1: return "p and q or p iff if S then q or p";
-            case 2: return "(q AND p xor(     if q then p) iff ((q)))";
-            case 3: return "p iff";
-            case 4: return "((if (q) then q) iff (r xor p))";
-            case 5: return "p xor q and q iff r or if not s then q";
-            case 6: return "pq";
-            case 7: return "not p iff";
-            case 8: return "p and q iff (p xor (if p then r))";
-            default:
-                Scanner scanner = new Scanner(System.in);
-                inputan = scanner.nextLine();
-                scanner.close();
-                break;
-        }
-        return inputan;
-    }
-    private static boolean unitTest () {
-        Object[][] testCase = {
-            {getInput(0), true},
-            {getInput(1), true},
-            {getInput(2), true},
-            {getInput(3), false},
-            {getInput(4), true},
-            {getInput(5), true},
-            {getInput(6), false},
-            {getInput(7), false},
-            {getInput(8), true}
-        };
-        ArrayList<Term> arrToken = null;
-        PDA pda = createPDA();
-        boolean result, finalResult = true;
-        for (int i = 0; i < testCase.length; i++) {
-            String inputan = (String) testCase[i][0];
-            boolean testValue = (boolean) testCase[i][1];
-            System.out.println("Test case " + i + ": " + inputan);
-            System.out.print("Result: ");
-            result = false;
-            arrToken = new ArrayList<>();
-            if (lexicalize(arrToken, inputan))
-                result = pda.validate(arrToken);
-            System.out.println((result)? "Valid":"Not valid");
-            result = result == testValue;
-            System.out.println((result)? "Passed": "Not Passed");
-            System.out.println();
-            if (!result) finalResult = false;
-        }
-
-        System.out.println("Final test result: " + ((finalResult)? "Passed": "Not Passed"));
-        return finalResult;
-    }
-    private static ArrayList<String> splitInput (String inputan) {
+    protected static ArrayList<String> splitInput (String inputan) {
         /** split inputan */
         ArrayList<String> arrKata = new ArrayList<String>();
         inputan = inputan.toLowerCase();
@@ -112,7 +59,7 @@ class Main {
 
         return arrKata;
     }
-    private static boolean lexicalize(ArrayList<Term> arrToken, String inputan) {
+    protected static boolean lexicalize(ArrayList<Term> arrToken, String inputan) {
 
         FA[] arrFa = {
             new FA (1, "pqrs", new int[][]{{1, 1, 1, 1},{-1, -1, -1}}, new int[]{1}),
@@ -147,14 +94,14 @@ class Main {
         }
         return true;
     }
-    private static void print(ArrayList<Term> arr) {
+    protected static void print(ArrayList<Term> arr) {
         for (Term obj : arr) {
             System.out.print(obj.val + " ");
         }
         System.out.println();
     }
 
-    private static PDA createPDA () {
+    protected static PDA createPDA () {
         char[] arrC = {'S', 'A', 'B'};
         Nonterm[] nt = Nonterm.toArr(arrC);
         /** Tabel Transisi:
