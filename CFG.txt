@@ -14,13 +14,17 @@ F -> (
 G -> )
 H -> A | HBH | CH | FHG | DHEH
 
-S -> H
-B -> 3 | 4 | 5 | 8
-H -> 1 | HBH | 2H | 9H10 | 6H7H
+S -> A | ()
+A -> p | q | r | s | ABA | not A | (A) | if A then A
+B -> and | or | xor | iff
+
+S -> A | 9 10
+A -> 1 | A B A | 2 A | ( A ) | 6 A 7 A
+B -> 3 | 4 | 5 | 6
 
 Tabel Transisi:
         1       2       3   4   5   6           7   8   9           10
-    S   A       A                   A                   A
+    S   A       A                   A                   A|910
     A   ABA|1   ABA|2A              ABA|6A7A            ABA|9A10
     B                   3   4   5                   8
 

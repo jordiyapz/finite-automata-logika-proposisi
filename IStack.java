@@ -4,9 +4,7 @@ class IStack<E> extends Stack<E> {
 
     private static final long serialVersionUID = 1224463164541339166L;
 
-    IStack() {
-        super();
-    }
+    IStack() { super(); }
 
     public IStack<E> clone() {
         IStack<E> dump = new IStack<>();
@@ -23,15 +21,17 @@ class IStack<E> extends Stack<E> {
     }
 
     public void print() {
-        IStack<Union> dump = new IStack<>();
+        IStack<E> dump = new IStack<>();
         while (!this.isEmpty())
-            dump.push((Union) this.pop());
+            dump.push(this.pop());
         while (!dump.isEmpty()) {
-            Union temp = dump.pop();
-            if (temp.isTerm()) {
+            E temp = dump.pop();
+            if (temp.getClass().getSimpleName() == "Term") {
                 System.out.print(((Term)temp).val);
-            } else {
+            } else if (temp.getClass().getSimpleName() == "Nonterm") {
                 System.out.print(((Nonterm)temp).val);
+            } else {
+                System.out.print(temp);
             }
             System.out.print(" -> ");
             this.push((E)temp);

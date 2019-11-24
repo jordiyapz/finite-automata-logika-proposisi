@@ -6,12 +6,12 @@ class Main {
         String mode = "test";
         if (mode.equals("test")) {
             unitTest();
-        } else {
+        } else if (mode.equals("run")) {
             String inputan = getInput(-1);
             ArrayList<Term> arrToken = new ArrayList<>();
             if (lexicalize(arrToken, inputan)) {
                 print(arrToken);
-                PDA pda = createPDA2();
+                PDA pda = createPDA();
                 System.out.println((pda.validate(arrToken))? "Valid":"Not valid");
             }
         }
@@ -26,7 +26,7 @@ class Main {
             case 3: return "p iff";
             case 4: return "((if (q) then q) iff (r xor p))";
             case 5: return "p xor q and q iff r or if not s then q";
-            case 6: return "(p) q";
+            case 6: return "pq";
             case 7: return "not p iff";
             case 8: return "p and q iff (p xor (if p then r))";
             default:
@@ -50,7 +50,7 @@ class Main {
             {getInput(8), true}
         };
         ArrayList<Term> arrToken = null;
-        PDA pda = createPDA2();
+        PDA pda = createPDA();
         boolean result, finalResult = true;
         for (int i = 0; i < testCase.length; i++) {
             String inputan = (String) testCase[i][0];
@@ -109,12 +109,6 @@ class Main {
         if (!tokened) {
             arrKata.add(kata);
         }
-        /*
-        for (String s : arrKata) {
-            System.out.print(s + " ");
-        }
-        System.out.println();
-        */
 
         return arrKata;
     }
@@ -148,7 +142,6 @@ class Main {
                 }
             }
             if (!b) {
-                System.out.println("error ");
                 return false;
             }
         }
@@ -160,69 +153,19 @@ class Main {
         }
         System.out.println();
     }
+
     private static PDA createPDA () {
-        char[] arrC = new char[13];
-        arrC[0] = 'S';
-        char temp = 'A';
-        for (int i = 1; i <= 12; i++) {
-            arrC[i] = temp++;
-        }
-        /**
-         * Tabel Transisi:
-                1		2		3		4		5		6		7		8		9		10		EOS
-            S	HI|1	CH		-		-		-		KL		-		-		FJ		-		EOS
-            A	1		-		-		-		-		-		-		-		-		-		-
-            B	-		-		3		4		5		-		-		8		-		-		-
-            C	-		2		-		-		-		-		-		-		-		-		-
-            D	-		-		-		-		-		6		-		-		-		-		-
-            E	-		-		-		-		-		-		7		-		-		-		-
-            F	-		-		-		-		-		-		-		-		9		-		-
-            G	-		-		-		-		-		-		-		-		-		10		-
-            H	HI|1	CH		-		-		-		KL		-		-		FJ		-		-
-            I	-		-		BH		BH		BH		-		-		BH		-		-		-
-            J	HG		HG		-		-		-		HG		-		-		HG		-		-
-            K	-		-		-		-		-		DH		-		-		-		-		-
-            L	-		-		-		-		-		-		EH		-		-		-		-
-        */
-        Term[] ta = Term.toArr(new int[]{0,1,2,3,4,5,6,7,8,9,10});
-        Nonterm[] nta = Nonterm.toArr(new String[] {
-            "HI", "CH", "KL", "FJ", "BH", "HG", "DH", "EH"
-        });
-        Union[][][] transTab = {
-            {{nta[0],ta[1]},    {nta[1]},   {},         {},         {},         {nta[2]},   {},         {},         {nta[3]},   {}          },
-            {{ta[1]},           {},         {},         {},         {},         {},         {},         {},         {},         {}          },
-            {{},                {},         {ta[3]},    {ta[4]},    {ta[5]},    {},         {},         {ta[8]},    {},         {}          },
-            {{},                {ta[2]},    {},         {},         {},         {},         {},         {},         {},         {}          },
-            {{},                {},         {},         {},         {},         {ta[6]},    {},         {},         {},         {}          },
-            {{},                {},         {},         {},         {},         {},         {ta[7]},    {},         {},         {}          },
-            {{},                {},         {},         {},         {},         {},         {},         {},         {ta[9]},    {}          },
-            {{},                {},         {},         {},         {},         {},         {},         {},         {},         {ta[10]}    },
-            {{nta[0],ta[1]},    {nta[1]},   {},         {},         {},         {nta[2]},   {},         {},         {nta[3]},   {}          },
-            {{},                {},         {nta[4]},   {nta[4]},   {nta[4]},   {},         {},         {nta[4]},   {},         {}          },
-            {{nta[5]},          {nta[5]},   {},         {},         {},         {nta[5]},   {},         {},         {nta[5]},   {}          },
-            {{},                {},         {},         {},         {},         {nta[6]},   {},         {},         {},         {}          },
-            {{},                {},         {},         {},         {},         {},         {nta[7]},   {},         {},         {}          }
-        };
-        Term[] terms = new Term[10];
-        for (int i = 0; i < terms.length; i++) {
-            terms[i] = ta[i+1];
-        }
-        // terms = {1,2,3,4,5,6,7,8,9,10}
-        return new PDA(arrC[0], arrC, terms, transTab);
-    }
-    private static PDA createPDA2 () {
         char[] arrC = {'S', 'A', 'B'};
         Nonterm[] nt = Nonterm.toArr(arrC);
-        /**
-            Tabel Transisi:
+        /** Tabel Transisi:
                 1       2       3   4   5   6           7   8   9           10
-            S   A       A                   A                   A
+            S   A       A                   A                   A|910
             A   ABA|1   ABA|2A              ABA|6A7A            ABA|9A10
             B                   3   4   5                   8
         */
         Term[] t = Term.toArr(new int[]{0,1,2,3,4,5,6,7,8,9,10});
         Union[][][][] transTab = {
-            { {{nt[1]}}, {{nt[1]}}, {}, {}, {}, {{nt[1]}}, {}, {}, {{nt[1]}}, {} },
+            { {{nt[1]}}, {{nt[1]}}, {}, {}, {}, {{nt[1]}}, {}, {}, {{nt[1]},{t[9],t[10]}}, {} },
             { {{nt[1],nt[2],nt[1]},{t[1]}}, {{nt[1],nt[2],nt[1]},{t[2],nt[1]}}, {}, {}, {}, {{nt[1],nt[2],nt[1]},{t[6],nt[1],t[7],nt[1]}}, {}, {}, {{nt[1],nt[2],nt[1]},{t[9],nt[1],t[10]}}, {} },
             { {}, {}, {{t[3]}}, {{t[4]}}, {{t[5]}}, {}, {}, {{t[8]}}, {}, {} }
         };

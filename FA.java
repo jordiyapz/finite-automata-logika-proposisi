@@ -7,22 +7,22 @@ class FA {
 
     /* Contoh tabel transisi
     //     a   n   d
-    // 0   1   -1  -1    
-    // 1   -1  2   -1    
+    // 0   1   -1  -1
+    // 1   -1  2   -1
     // 2   -1  -1  3
     // 3   -1  -1  -1
     */
 
     int[] finalState = {};
-    
+
     FA (int id, String header, int[][] transTab, int[] finalState) {
         this.id = id;
         this.header = header;
         this.transTab = transTab;
-        this.finalState = finalState; 
+        this.finalState = finalState;
     }
 
-    FA (int id, String header) {   
+    FA (int id, String header) {
         this.id = id;
         this.header = header;
         int len = header.length();
@@ -32,7 +32,6 @@ class FA {
                 transTab[i][j] = -1;
             }
         }
-        
         for (int i = 0; i < len; i++){
             transTab[i][i] = i+1;
         }
@@ -55,7 +54,7 @@ class FA {
             if (state == fs) return true;
         }
         return false;
-    }    
+    }
     public int getId (String input) {
         if (this.check(input)) {
             return this.id;

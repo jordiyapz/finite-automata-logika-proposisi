@@ -1,7 +1,5 @@
 import java.util.ArrayList;
 
-import javax.sound.sampled.Port;
-
 class PDA {
     Nonterm initState;
     Nonterm[] states;
@@ -9,9 +7,8 @@ class PDA {
     Union[][][][] transTab;
     private static int numOfLoops;
 
-    private final static int MaxNumOfLoopPermitted = 10000;
-
     private final static boolean debugMode = false;
+    private final static int MaxNumOfLoopPermitted = 500;
 
     PDA (char initState, char[] states, Term[] terms, Union [][][][] transTab) {
         this.initState = new Nonterm(initState);
@@ -33,6 +30,11 @@ class PDA {
     private boolean traverse(ArrayList<Term> input, IStack<Union> stack, int head) {
         int inpLength = input.size();
         Nonterm state;
+        Union temp;
+
+        if (debugMode && numOfLoops > MaxNumOfLoopPermitted)
+            System.out.println("Max num of loops reached!");
+
         while (
             !stack.isEmpty() &&
             head < inpLength &&
@@ -40,7 +42,7 @@ class PDA {
             ++numOfLoops <= MaxNumOfLoopPermitted
         ) {
             if (debugMode) stack.print();
-            Union temp = stack.pop();
+            temp = stack.pop();
             if (temp.isTerm()) {
                 if (!input.get(head).equals(temp)) {
                     if (debugMode) System.out.println("Terminal tidak sesuai dengan yg di stack");
@@ -90,7 +92,6 @@ class PDA {
         else if (stack.isEmpty()) if (debugMode) System.out.println("Stack habis duluan");
         else if (debugMode) System.out.println("Head habis duluan");
 
-        if (debugMode && numOfLoops > MaxNumOfLoopPermitted) System.out.println("Max num of loops reached!");
         return false;
     }
 
